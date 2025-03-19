@@ -374,7 +374,7 @@ export default function Map({
         <div className="bug-nub">
           <a
             className="bug-nub-link"
-            href="https://github.com/OvertureMaps/io-site/issues/new/choose"
+            href="https://github.com/OvertureMaps/explore-site/issues/new/choose"
             target="_blank"
           >
             <BugIcon className="bug-nub-icon" />
