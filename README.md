@@ -6,7 +6,7 @@ The data accessible through the site is drawn from the [Overture Maps Foundation
 
 ## Participate!
 
-- Read the project [Contributioning Guide](CONTRIBUTING.md) to learn about how to contribute.
+- Read the project [Contributing Guide](CONTRIBUTING.md) to learn about how to contribute.
 - See [open issues in the issue tracker](https://github.com/OvertureMaps/explore-site/issues?q=is%3Aissue+is%3Aopen+) if you're looking to help on issues.
 
 - The current build of the `main` branch is publicly available [here](https://explore.overturemaps.org/#16.34/51.049194/3.728993)!
