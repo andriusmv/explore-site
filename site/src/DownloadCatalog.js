@@ -1,54 +1,93 @@
-import manifest from './manifests/2025-06-25.0.json';
+// URL for the remote manifest file
+const MANIFEST_URL = 'https://labs.overturemaps.org/data/explore-site-download-manifest.json';
 
-const awsbasepath = 'https://overturemaps-us-west-2.s3.amazonaws.com/release/';
+// Cache the manifest to avoid repeated fetches
+let cachedManifest = null;
+let manifestFetchPromise = null;
 
 /**
- * 
- * @param {*} bbox 
- * @param {*} visibleTypes an array of type names that are currently visible on the map
- * @returns an object with the 'basepath' and array of filespecs 'files' */
-export function getDownloadCatalog(bbox, visibleTypes){
-   let fileCatalog = {};
-   let types = [];
+ * Fetches the manifest from the remote URL
+ * @returns {Promise<Object>} The manifest object
+ */
+async function fetchManifest() {
+  if (cachedManifest) {
+    return cachedManifest;
+  }
 
-   const versionPath = awsbasepath + manifest.release_version;
+  if (!manifestFetchPromise) {
+    manifestFetchPromise = fetch(MANIFEST_URL)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch manifest: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        cachedManifest = data;
+        return data;
+      })
+      .catch(error => {
+        console.error('Error fetching manifest:', error);
+        manifestFetchPromise = null; // Allow retry on next call
+        throw error;
+      });
+  }
 
-   fileCatalog.basePath = versionPath;
-   manifest.themes.forEach( theme => {
-      // If the theme isn't visible, don't download it. 
-         theme.types.forEach(type => {
-            if (!visibleTypes.includes(type.name)){
-               return;
-            }
-            let typeEntry = {};
-         typeEntry.files = [];
-           
-            type.files.forEach(file => {
-               typeEntry.name = type.name;
+  return manifestFetchPromise;
+}
 
-                  let newName = `${theme.relative_path}${type.relative_path}/${file.name}`
-               if (intersects(bbox, file.bbox)) {
-                  typeEntry.files.push( newName )
-               }
-            })
-            if (typeEntry.files.length > 0) {
-               types.push(typeEntry);
-            }
-         })
+/**
+ * Gets the download catalog based on the current bbox and visible types
+ * @param {Array} bbox The bounding box [minx, miny, maxx, maxy]
+ * @param {Array} visibleTypes An array of type names that are currently visible on the map
+ * @returns {Promise<Object>} A promise that resolves to an object with the 'basePath' and array of 'types'
+ */
+export async function getDownloadCatalog(bbox, visibleTypes) {
+  try {
+    const manifest = await fetchManifest();
+
+    let fileCatalog = {};
+    let types = [];
+
+    fileCatalog.basePath = 'https://overturemaps-us-west-2.s3.amazonaws.com/release/' + manifest.release_version;
+
+    visibleTypes.forEach(type => {
+      if (!manifest.types[type]) {
+        console.warn(`Type ${type} not found in manifest`);
+        return;
       }
-   )
 
-   fileCatalog.types = types;
-   return fileCatalog;
+      let typeEntry = {
+        name: type,
+        files: []
+      };
+
+      manifest.types[type].forEach(file => {
+        if (intersects(bbox, file.bbox)) {
+          typeEntry.files.push(file.path);
+        }
+      });
+
+      if (typeEntry.files.length > 0) {
+        types.push(typeEntry);
+      }
+    });
+
+    fileCatalog.types = types;
+    return fileCatalog;
+  } catch (error) {
+    console.error('Error getting download catalog:', error);
+    throw error;
+  }
 }
 
 
 // Calculate intersection given 4-item bbox list of [minx, miny, maxx, maxy]
 function intersects(bb1, bb2) {
    return (
-      bb1[0] < bb2[2] && 
-      bb1[2] > bb2[0] && 
-      bb1[1] < bb2[3] && 
+      bb1[0] < bb2[2] &&
+      bb1[2] > bb2[0] &&
+      bb1[1] < bb2[3] &&
       bb1[3] > bb2[1]
    );
 }
