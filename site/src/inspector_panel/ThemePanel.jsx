@@ -20,13 +20,25 @@ const sharedProperties = [
 function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
   return (
     <div className="theme-panel">
+      {entity["names"] ? (
+        <div className="top-name">
+          <div>
+            <em>{JSON.parse(entity["names"])["primary"]}</em>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
       {entity["id"] ? (
         <div className="panel-row id">
-          <div>
-            <strong>id: </strong>
+          <div onDoubleClick={() => {
+              navigator.clipboard.writeText(entity["id"]);
+            }}>
             {entity["id"]}
           </div>
-          <InfoToolTip mode={mode} content={tips.id} target={"theme-id-tip"} />
+          <InfoToolTip mode={mode} content=
+            "A feature ID, typically associated with the Global Entity Reference System (GERS). Double Click to copy to clipboard"
+          target={"theme-id-tip"} />
         </div>
       ) : (
         <></>

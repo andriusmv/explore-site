@@ -1,5 +1,5 @@
 // URL for the remote manifest file
-const MANIFEST_URL = 'https://labs.overturemaps.org/data/explore-site-download-manifest.json';
+const STAC_URL = 'https://labs.overturemaps.org/stac/catalog.json'
 
 // Cache the manifest to avoid repeated fetches
 let cachedManifest = null;
@@ -15,7 +15,17 @@ async function fetchManifest() {
   }
 
   if (!manifestFetchPromise) {
-    manifestFetchPromise = fetch(MANIFEST_URL)
+    manifestFetchPromise = fetch(STAC_URL)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch STAC: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(stacData => {
+        const latest = stacData.latest;
+        return fetch(`https://labs.overturemaps.org/stac/${latest}/manifest.geojson`);
+      })
       .then(response => {
         if (!response.ok) {
           throw new Error(`Failed to fetch manifest: ${response.status} ${response.statusText}`);
@@ -23,8 +33,14 @@ async function fetchManifest() {
         return response.json();
       })
       .then(data => {
-        cachedManifest = data;
-        return data;
+        cachedManifest = data.features.map((f)=>{
+         return {
+            'type': f.properties.ovt_type,
+            'bbox': f.bbox,
+            'path': f.properties.rel_path
+         }
+        });
+        return cachedManifest;
       })
       .catch(error => {
         console.error('Error fetching manifest:', error);
@@ -47,33 +63,29 @@ export async function getDownloadCatalog(bbox, visibleTypes) {
     const manifest = await fetchManifest();
 
     let fileCatalog = {};
-    let types = [];
+    let types = {};
 
-    fileCatalog.basePath = 'https://overturemaps-us-west-2.s3.amazonaws.com/release/' + manifest.release_version;
-
-    visibleTypes.forEach(type => {
-      if (!manifest.types[type]) {
-        console.warn(`Type ${type} not found in manifest`);
-        return;
+   //  Create types mapping
+    visibleTypes.forEach((type) => {
+      types[type] = {
+         'name' : type,
+         'files': []
       }
+    })
 
-      let typeEntry = {
-        name: type,
-        files: []
-      };
+    fileCatalog.basePath = 'https://overturemaps-us-west-2.s3.amazonaws.com/'
 
-      manifest.types[type].forEach(file => {
+    manifest.forEach(file => {
+      // First, check if we want this type
+      if (visibleTypes.includes(file.type)){
+        //Now check if the file intersects the bbox
         if (intersects(bbox, file.bbox)) {
-          typeEntry.files.push(file.path);
+          types[file.type].files.push(file.path);
         }
-      });
-
-      if (typeEntry.files.length > 0) {
-        types.push(typeEntry);
       }
     });
 
-    fileCatalog.types = types;
+    fileCatalog.types = Object.values(types);
     return fileCatalog;
   } catch (error) {
     console.error('Error getting download catalog:', error);
