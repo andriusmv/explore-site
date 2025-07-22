@@ -11,6 +11,21 @@ caption.other-props {
   width: max-content;
 }
 
+table.theme-panel-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table.theme-panel-table td {
+  padding: 5px;
+  vertical-align: top;
+}
+
+table.theme-panel-table tr {
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+}
+
 button.theme-table {
   display: grid;
   justify-content: space-between;

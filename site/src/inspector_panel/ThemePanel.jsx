@@ -106,19 +106,23 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
         <></>
       )}
       {["version"].map((key) => (
-        <div className="panel-row id">
+        <div key={key} className="panel-row id">
           <div>
             <strong>{key}: </strong>
             {entity[key]}
           </div>
         </div>
       ))}
-      {Object.keys(entity)
-        .filter((key) => !key.startsWith("@"))
-        .filter((key) => !sharedProperties.includes(key))
-        .map((key) => (
-          <TableRow key={key} mode={mode} table_key={key} entity={entity} />
-        ))}
+      <table className="theme-panel-table">
+        <tbody>
+          {Object.keys(entity)
+            .filter((key) => !key.startsWith("@"))
+            .filter((key) => !sharedProperties.includes(key))
+            .map((key) => (
+              <TableRow key={key} mode={mode} table_key={key} entity={entity} />
+            ))}
+        </tbody>
+      </table>
     </div>
   );
 }

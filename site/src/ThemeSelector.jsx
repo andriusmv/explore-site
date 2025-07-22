@@ -241,6 +241,7 @@ const ThemeSelector = ({
             return (
               <Grid
                 container
+                key={`theme-container-${theme}`}
                 className={`theme-box ${
                   mode === "theme-dark" ? "dark" : "light"
                 }`}
@@ -253,9 +254,11 @@ const ThemeSelector = ({
                   }
                   item
                   xs={10 - expandGridSize}
+                  key={`theme-item-${theme}`}
                 >
                   <div>
                     <FormControlLabel
+                      key={theme}
                       label={format(theme)}
                       className="theme-selector-checkbox"
                       sx={{
@@ -268,7 +271,7 @@ const ThemeSelector = ({
                           size="small"
                           sx={{ padding: "2px", ml: 1 }}
                           checked={
-                            selectedThemes[theme] && children.includes(true)
+                            Boolean(selectedThemes[theme]) && children.includes(true)
                           }
                           indeterminate={
                             children.includes(true) && children.includes(false)
@@ -290,6 +293,7 @@ const ThemeSelector = ({
                       >
                         {types.map((layer) => (
                           <FormControlLabel
+                            key={layer.type}
                             label={format(layer.type)}
                             className={`type-selector-checkbox ${
                               mode === "theme-dark" ? "dark" : "light"
@@ -298,7 +302,7 @@ const ThemeSelector = ({
                               <Checkbox
                                 sx={{ padding: "2px" }}
                                 size="small"
-                                checked={selectedTypes[layer.type]}
+                                checked={Boolean(selectedTypes[layer.type])}
                                 onChange={() => handleTypeChange(layer.type)}
                               />
                             }
@@ -310,10 +314,12 @@ const ThemeSelector = ({
                     ))}
                 </Grid>
 
-                <Grid item xs={expandGridSize}>
+                <Grid
+                  key={`expand-icon-${theme}`}
+                  item xs={expandGridSize}>
                   {renderExpandIcon(theme, types)}
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={2} key={`pin-icon-${theme}`}>
                   {renderPinThemeIcon(theme, mode)}
                 </Grid>
               </Grid>
@@ -343,7 +349,7 @@ const ThemeSelector = ({
         anchorEl={anchorEl}
         onClose={handleClose}
         placement="right-start"
-        anchorOrigin={{
+        anchororigin={{
           vertical: "bottom",
           horizontal: "left",
         }}
