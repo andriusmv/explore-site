@@ -31,11 +31,10 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
       )}
       {entity["id"] ? (
         <div className="panel-row id">
-          <div onDoubleClick={() => {
+          <strong>id: </strong>
+          <span onDoubleClick={() => {
               navigator.clipboard.writeText(entity["id"]);
-            }}>
-            {entity["id"]}
-          </div>
+            }}>{entity["id"]}</span>
           <InfoToolTip mode={mode} content=
             "A feature ID, typically associated with the Global Entity Reference System (GERS). Double Click to copy to clipboard"
           target={"theme-id-tip"} />
