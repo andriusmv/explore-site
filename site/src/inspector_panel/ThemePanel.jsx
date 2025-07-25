@@ -20,13 +20,24 @@ const sharedProperties = [
 function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
   return (
     <div className="theme-panel">
+      {entity["names"] ? (
+        <div className="top-name">
+          <div>
+            <em>{JSON.parse(entity["names"])["primary"]}</em>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
       {entity["id"] ? (
         <div className="panel-row id">
-          <div>
-            <strong>id: </strong>
-            {entity["id"]}
-          </div>
-          <InfoToolTip mode={mode} content={tips.id} target={"theme-id-tip"} />
+          <strong>id: </strong>
+          <span onDoubleClick={() => {
+              navigator.clipboard.writeText(entity["id"]);
+            }}>{entity["id"]}</span>
+          <InfoToolTip mode={mode} content=
+            "A feature ID, typically associated with the Global Entity Reference System (GERS). Double Click to copy to clipboard"
+          target={"theme-id-tip"} />
         </div>
       ) : (
         <></>
@@ -94,19 +105,23 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
         <></>
       )}
       {["version"].map((key) => (
-        <div className="panel-row id">
+        <div key={key} className="panel-row id">
           <div>
             <strong>{key}: </strong>
             {entity[key]}
           </div>
         </div>
       ))}
-      {Object.keys(entity)
-        .filter((key) => !key.startsWith("@"))
-        .filter((key) => !sharedProperties.includes(key))
-        .map((key) => (
-          <TableRow key={key} mode={mode} table_key={key} entity={entity} />
-        ))}
+      <table className="theme-panel-table">
+        <tbody>
+          {Object.keys(entity)
+            .filter((key) => !key.startsWith("@"))
+            .filter((key) => !sharedProperties.includes(key))
+            .map((key) => (
+              <TableRow key={key} mode={mode} table_key={key} entity={entity} />
+            ))}
+        </tbody>
+      </table>
     </div>
   );
 }

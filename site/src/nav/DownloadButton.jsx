@@ -30,86 +30,102 @@ function DownloadButton({ mode, zoom, setZoom, visibleTypes}) {
 
   const handleDownloadClick = async () => {
     setLoading(true);
-    //Get current map dimensions and convert to bbox
-    const bounds = myMap.getBounds();
-    let bbox = [
-      bounds.getWest(), //minx
-      bounds.getSouth(), //miny
-      bounds.getEast(), //maxx
-      bounds.getNorth(), //maxy
-    ];
+    try {
+      //Get current map dimensions and convert to bbox
+      const bounds = myMap.getBounds();
+      let bbox = [
+        bounds.getWest(),  //xmin
+        bounds.getSouth(), //ymin
+        bounds.getEast(),  //xmax
+        bounds.getNorth(), //ymax
+      ];
 
-    console.log(bounds);
+      //Send those to the download engine
+      const xmin = ["bbox", "xmin"];
+      const ymin = ["bbox", "ymin"];
+      const xmax = ["bbox", "xmax"];
+      const ymax = ["bbox", "ymax"];
 
-    //Send those to the download engine
-    const xmin = ["bbox", "xmin"];
-    const ymin = ["bbox", "ymin"];
-    const xmax = ["bbox", "xmax"];
-    const ymax = ["bbox", "ymax"];
+      const readOptions = {
+        bbox: bbox,
+        bboxPaths: {
+          xmin,
+          ymin,
+          xmax,
+          ymax,
+        },
+      };
 
-    const readOptions = {
-      bbox: bbox,
-      bboxPaths: {
-        xmin,
-        ymin,
-        xmax,
-        ymax,
-      },
-    };
-    let downloadCatalog = getDownloadCatalog(bbox, visibleTypes);
+      set_panic_hook();
 
-    set_panic_hook();
+      // Get the download catalog - now this is async
+      const downloadCatalog = await getDownloadCatalog(bbox, visibleTypes);
 
-    // The catalog contains a base path and then a list of types with filenames.
-    //First, assemble the parquet datasets in parallel.
-    let datasets = downloadCatalog.types.map((type) => {
-      return new ParquetDataset(downloadCatalog.basePath, type.files).then(
-        (dataset) => {
-          return { type: type.name, parquet: dataset };
-        }
-      );
-    });
+      console.log(downloadCatalog);
 
-    Promise.all(datasets)
-      .then((datasets) => {
-        return datasets.map((dataset) =>
-          dataset.parquet.read(readOptions).then((reader) => {
-            return { type: dataset.type, reader: reader };
-          })
+      if (!downloadCatalog.types || downloadCatalog.types.length === 0) {
+        console.warn("No data available to download in the current view");
+        setLoading(false);
+        return;
+      }
+
+      // The catalog contains a base path and then a list of types with filenames.
+      //First, assemble the parquet datasets in parallel.
+      let datasets = downloadCatalog.types.map((type) => {
+        return new ParquetDataset(downloadCatalog.basePath, type.files).then(
+          (dataset) => {
+            return { type: type.name, parquet: dataset };
+          }
         );
-      })
-      .then((tableReads) =>
-        Promise.all(tableReads)
-          .then((wasmTables) => {
-            wasmTables.map((wasmTable) => {
-              if (wasmTable?.reader?.numBatches > 0) {
-                const binaryDataForDownload = writeGeoJSON(wasmTable.reader);
-
-                let blerb = new Blob([binaryDataForDownload], {
-                  type: "application/octet-stream",
-                });
-
-                const url = URL.createObjectURL(blerb);
-                var downloadLink = document.createElement("a");
-                downloadLink.href = url;
-
-                const center = myMap.getCenter();
-                const zoom = myMap.getZoom();
-                downloadLink.download = `overture-${wasmTable.type}-${zoom}-${center.lat}-${center.lng}.geojson`;
-
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-              }
-            });
-          })
-          .then(() => {
-            setLoading(false);
-          })
-      ).catch(error => {
-        // Something went wrong with the download.
-        alert("An error occurred during the download: " + error);
       });
+
+      await Promise.all(datasets)
+        .then((datasets) => {
+          return datasets.map((dataset) =>
+            dataset.parquet.read(readOptions).then((reader) => {
+              return { type: dataset.type, reader: reader };
+            })
+          );
+        })
+        .then((tableReads) =>
+          Promise.all(tableReads)
+            .then((wasmTables) => {
+              wasmTables.map((wasmTable) => {
+                if (wasmTable?.reader?.numBatches > 0) {
+                  const binaryDataForDownload = writeGeoJSON(wasmTable.reader);
+
+                  let blerb = new Blob([binaryDataForDownload], {
+                    type: "application/octet-stream",
+                  });
+
+                  const url = URL.createObjectURL(blerb);
+                  var downloadLink = document.createElement("a");
+                  downloadLink.href = url;
+
+                  const center = myMap.getCenter();
+                  const zoom = myMap.getZoom();
+                  downloadLink.download = `overture-${wasmTable.type}-${zoom}-${center.lat}-${center.lng}.geojson`;
+
+                  document.body.appendChild(downloadLink);
+                  downloadLink.click();
+                  document.body.removeChild(downloadLink);
+                }
+              });
+            })
+            .then(() => {
+              setLoading(false);
+            })
+        ).catch(error => {
+          // Something went wrong with the download.
+          console.error("An error occurred during the download:", error);
+          alert("An error occurred during the download. Please try again.");
+        });
+    } catch (error) {
+      console.error("Error in download process:", error);
+      alert("An error occurred while preparing the download. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleToggleTooltip = () => {
