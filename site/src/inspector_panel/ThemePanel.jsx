@@ -6,6 +6,7 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import ThemeIcon from "./ThemeIcon";
 import SourcesRow from "./SourcesRow.jsx";
+import NamesRow from "./NamesRow.jsx";
 
 const sharedProperties = [
   "theme",
@@ -13,7 +14,9 @@ const sharedProperties = [
   "update_time",
   "id",
   "sources",
+  "names",
   "subtype",
+  "class",
   "version",
 ];
 
@@ -23,7 +26,7 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
       {entity["names"] ? (
         <div className="top-name">
           <div>
-            <em>{JSON.parse(entity["names"])["primary"]}</em>
+            <h4>{JSON.parse(entity["names"])["primary"]}</h4>
           </div>
         </div>
       ) : (
@@ -89,6 +92,14 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
           <div>
             <IndentIcon /> <strong>subtype: </strong>
             {entity["subtype"]}
+            {entity["class"] ? (
+              <div style={{ paddingLeft: "15px" }}>
+                <IndentIcon /> <strong>class: </strong>
+                {entity["class"]}
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
           <InfoToolTip
             mode={mode}
@@ -99,6 +110,12 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
       ) : (
         <></>
       )}
+      {entity["names"] ? (
+        <NamesRow entity={entity} mode={mode} />
+      ) : (
+        <></>
+      )}
+
       {entity["sources"] ? (
         <SourcesRow entity={entity} mode={mode} tips={tips} />
       ) : (
@@ -117,6 +134,7 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
           {Object.keys(entity)
             .filter((key) => !key.startsWith("@"))
             .filter((key) => !sharedProperties.includes(key))
+            .filter((key) => entity[key] != null && entity[key] !== "null")
             .map((key) => (
               <TableRow key={key} mode={mode} table_key={key} entity={entity} />
             ))}

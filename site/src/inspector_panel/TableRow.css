@@ -1,65 +1,58 @@
 .inspector-panel {
   td {
-    padding: 5px;
+    padding: 2px 0;
+  }
+
+  td {
+    padding-right: 8px;
     vertical-align: top;
     border-left: 0;
     border-right: 0;
     word-break: break-all;
+    font-size: 13px;
   }
-
   td:first-child {
-    text-align: left;
-    width: 40%;
-    word-break: normal;
+    text-align: right;
+    min-width: fit-content;
+    max-width: 120px;
+    word-break: keep-all;
+    white-space: nowrap;
     border: none;
+    padding-right: 6px;
+    width: 1%;
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748b;
   }
-
   td:last-child {
-    overflow: hidden;
-    width: 60%;
     border: none;
+    word-break: break-word;
+    width: 99%;
   }
-
   tr {
     border-top: none;
-    border-bottom: var(--ifm-table-border-width) solid
-      var(--ifm-table-border-color);
+    border-bottom: 1px solid var(--border-color-light);
   }
 
-  td.expanded {
-    max-height: unset;
-    white-space: normal;
-  }
-
-  td.collapsed {
-    max-height: 26px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
-button.expand {
-  border: none;
-  border-radius: 50%;
-  padding: 0;
-  height: 26px;
-  width: 26px;
-  justify-content: center;
-  background-color: unset;
+/* Nested content styling */
+.nested-content {
+  margin-left: 8px;
+  border-left: 1px solid #e2e8f0;
+  padding-left: 6px;
+  margin-top: 2px;
 }
 
-button.expand:focus {
-  outline: none;
+.nested-item {
+  margin: 1px 0;
+  line-height: 1.3;
+  font-size: 12px;
 }
 
-div.first-child {
-  display: flex;
-  justify-content: space-between;
-  padding-right: 10px;
-}
-
-svg.ec-icon {
-  padding-top: 1px;
-  fill: var(--ifm-color-secondary-darkest);
+.nested-key {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+  margin-right: 3px;
 }

@@ -117,7 +117,7 @@ function InspectorPanel({
   return (
     <div className="inspector-panel">
       <div className="panel-header">
-        <h4 className="title">Inspector Panel</h4>
+        <h6 className="title">Inspector Panel</h6>
         <button
           className="close-panel-button"
           onClick={() => {

@@ -1,7 +1,8 @@
-import PropTypes from "prop-types";
-import "./TableRow.css";
+import "./NamesRow.css";
 
-function TableRow({ mode, table_key, entity }) {
+function NamesRow({ entity, mode }) {
+  const names = JSON.parse(entity["names"]);
+
   // Function to check if a value is a URL
   const isURL = (value) => {
     if (!value || typeof value !== 'string') return false;
@@ -90,7 +91,7 @@ function TableRow({ mode, table_key, entity }) {
 
     // Handle objects
     if (typeof value === 'object') {
-      const entries = Object.entries(value).filter(([key, val]) => val != null && val !== "null");
+      const entries = Object.entries(value);
       if (entries.length === 0) return '{}';
 
       return (
@@ -116,22 +117,31 @@ function TableRow({ mode, table_key, entity }) {
   };
 
   return (
-    <tr key={table_key}>
-      <td>
-        <strong>{table_key}</strong>
-      </td>
-      {entity[table_key] != null ? (
-        <td>
-          {renderValue(entity[table_key])}
-        </td>
-      ) : (
-        <td>None Found</td>
-      )}
-    </tr>
+    <div className="panel-row names">
+      <div>
+        <strong>names: </strong>
+        <div className="name-content">
+          {names.primary != null ? (
+            <p><strong>primary: </strong>{names.primary}</p>
+          ) : (
+            <></>
+          )}
+
+          {names.common != null ? (
+            <p><strong>common: </strong>{renderValue(names.common)}</p>
+          ) : (
+            <></>
+          )}
+
+          {names.rules != null ? (
+            <p><strong>rules: </strong>{renderValue(names.rules)}</p>
+          ) : (
+            <></>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
-TableRow.propTypes = {
-  entity: PropTypes.object,
-};
-export default TableRow;
+export default NamesRow;
