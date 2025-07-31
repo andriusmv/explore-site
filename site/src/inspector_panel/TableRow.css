@@ -1,37 +1,55 @@
 .inspector-panel {
-  td {
-    padding: 2px 0;
+  table {
+    table-layout: auto !important;
+    width: 100% !important;
+    display: block;
+  }
+
+  tbody {
+    display: block;
+  }
+
+  tr {
+    display: flex;
+    border-top: none;
+    border-bottom: 1px solid var(--border-color-light);
+    width: 100%;
   }
 
   td {
+    padding: 2px 0;
     padding-right: 8px;
-    vertical-align: top;
     border-left: 0;
     border-right: 0;
     word-break: break-all;
     font-size: 13px;
+    display: block;
   }
+
   td:first-child {
-    text-align: right;
-    min-width: fit-content;
-    max-width: 120px;
+    text-align: left;
     word-break: keep-all;
     white-space: nowrap;
     border: none;
     padding-right: 6px;
-    width: 1%;
     font-size: 11px;
     font-weight: 500;
     color: #64748b;
+    flex-shrink: 0;
+    width: auto;
   }
+
+  td:first-child strong {
+    font-weight: bold;
+    color: var(--ifm-font-color-base);
+    font-size: 13px;
+  }
+
   td:last-child {
     border: none;
     word-break: break-word;
-    width: 99%;
-  }
-  tr {
-    border-top: none;
-    border-bottom: 1px solid var(--border-color-light);
+    flex: 1;
+    min-width: 0;
   }
 
 }

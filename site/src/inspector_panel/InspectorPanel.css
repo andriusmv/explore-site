@@ -32,7 +32,7 @@
     overflow-y: scroll;
     overflow-x: auto;
     max-height: 250px;
-    table-layout: fixed;
+    table-layout: auto;
   }
 
   table th {
