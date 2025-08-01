@@ -1,11 +1,10 @@
 # This workflow will do a clean install of node dependencies and deploy to AWS.
 
-name: Deploy
+# Todo: this should perform the renaming and copying of the index file as well.
+name: Production Deplooy
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 permissions:
