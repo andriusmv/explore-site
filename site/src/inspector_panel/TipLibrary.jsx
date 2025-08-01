@@ -6,7 +6,7 @@ const BASE_SUBTYPE = "Further description of the feature type.";
 const BASE_ID =
   "A feature ID. This may be an ID associated with the Global Entity Reference System (GERS) if—and-only-if the feature represents an entity that is part of GERS.";
 const BASE_SOURCE =
-  "The array of source information for the properties of a given feature, with each entry being a source object which lists the property in JSON Pointer notation and the dataset that specific value came from. All features must have a root level source which is the default source if a specific property's source is not specified.";
+  "The array of source information for the properties of a given entity";
 export const BASE_TIPS = {
   theme: BASE_THEME,
   type: BASE_TYPE,
@@ -23,7 +23,7 @@ const BUILDING_SUBTYPE = "A broad category of the building type and purpose.";
 const BUILDING_ID =
   "A feature ID that may be associated with the Global Entity Reference System (GERS) if—and-only-if the feature represents an entity that is part of GERS.";
 const BUILDING_SOURCE =
-  "The array of source information for the properties of a given feature. Each source object lists the property in JSON Pointer notation and the dataset from which that specific value originated.";
+    "The array of source information for the properties of a given entity";
 export const BUILDING_TIPS = {
   theme: BUILDING_THEME,
   type: BUILDING_TYPE,
