@@ -79,8 +79,8 @@ jobs:
     - name: Copy new index file to S3 📤
       run: aws s3 cp site/$DISTDIR/index.html s3://aria-site/aria/$IDENTIFIER-aria.html --no-progress
       env:
-        IDENTIFIER: ${{ needs.build.outputs.outputs.identifier }}
-        DISTDIR: ${{ needs.build.outputs.outputs.distdir }}
+        IDENTIFIER: ${{ needs.build.outputs.identifier }}
+        DISTDIR: ${{ needs.build.outputs.distdir }}
 
     - name: Copy new dist dir to S3 📤
       run: aws s3 cp site/$DISTDIR s3://aria-site/aria/$DISTDIR --recursive --no-progress
