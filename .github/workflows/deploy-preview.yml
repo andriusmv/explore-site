@@ -28,10 +28,14 @@ jobs:
 
     - name: Setup vars 📋
       id: vars
-      run: echo "ariabaseurl=/aria/$(git rev-parse --short ${{ github.sha }})-20.x-dist" >> $GITHUB_OUTPUT
+      run: |
+        echo "ariabaseurl=/aria/$(git rev-parse --short ${{ github.sha }})-20.x-dist" >> $GITHUB_OUTPUT
+        echo "distdir=$(git rev-parse --short ${{ github.sha }})-20.x-dist" >> $GITHUB_OUTPUT
+        echo "identifier=$(git rev-parse --short ${{ github.sha }})-20.x" >> $GITHUB_OUTPUT
 
     - name: Install 🎯
       run: cd site; npm install
+
     - name: Build 🏃
       run: cd site; npm run build
       env:
@@ -68,17 +72,11 @@ jobs:
         role-duration-seconds: 900 # the ttl of the session, in seconds.
         aws-region: us-west-2
 
-    - name: Setup vars 📋
-      id: vars
-      run: |
-        echo ::set-output name=identifier::$(git rev-parse --short ${{ github.sha }})-20.x
-        echo ::set-output name=distdir::$(git rev-parse --short ${{ github.sha }})-20.x-dist
-
-    - name: Prep files 🔨
-      run: cd site ; npm run aws_deploy
-      env:
-        IDENTIFIER: ${{ steps.vars.outputs.identifier }}
-        DISTDIR: ${{ steps.vars.outputs.distdir }}
+    # - name: Prep files 🔨
+    #   run: cd site ; npm run aws_deploy
+    #   env:
+    #     IDENTIFIER: ${{ steps.vars.outputs.identifier }}
+    #     DISTDIR: ${{ steps.vars.outputs.distdir }}
 
     - name: Copy new index file to S3 📤
       run: aws s3 cp site/$DISTDIR/index.html s3://aria-site/aria/$IDENTIFIER-aria.html --no-progress
