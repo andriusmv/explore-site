@@ -51,8 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'preview'
-      url: ${{ steps.vars.outputs.ariabaseurl }}
+      name: preview
+      url:  https://d13285jxgcxetl.cloudfront.net/aria/${{ steps.vars.outputs.distdir }}/index.html
 
     steps:
     - name: Checkout 📥
