@@ -16,15 +16,14 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    outputs:
+      ariabaseurl: ${{ steps.vars.outputs.ariabaseurl }}
+      distdir: ${{ steps.vars.outputs.distdir }}
+      identifier: ${{ steps.vars.outputs.identifier }}
 
     steps:
     - name: Checkout 📥
       uses: actions/checkout@v4
-
-    - name: Use Node.js 20.12.0 ⚙️
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
 
     - name: Setup vars 📋
       id: vars
@@ -32,6 +31,11 @@ jobs:
         echo "ariabaseurl=/aria/$(git rev-parse --short ${{ github.sha }})-20.x-dist" >> $GITHUB_OUTPUT
         echo "distdir=$(git rev-parse --short ${{ github.sha }})-20.x-dist" >> $GITHUB_OUTPUT
         echo "identifier=$(git rev-parse --short ${{ github.sha }})-20.x" >> $GITHUB_OUTPUT
+
+    - name: Use Node.js 20.12.0 ⚙️
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
     - name: Install 🎯
       run: cd site; npm install
@@ -53,7 +57,7 @@ jobs:
     needs: build
     environment:
       name: preview
-      url:  https://d13285jxgcxetl.cloudfront.net/aria/${{ steps.vars.outputs.distdir }}/index.html
+      url:  https://d13285jxgcxetl.cloudfront.net/aria/${{ needs.build.outputs.distdir }}/index.html
 
     steps:
     - name: Checkout 📥
@@ -72,24 +76,18 @@ jobs:
         role-duration-seconds: 900 # the ttl of the session, in seconds.
         aws-region: us-west-2
 
-    # - name: Prep files 🔨
-    #   run: cd site ; npm run aws_deploy
-    #   env:
-    #     IDENTIFIER: ${{ steps.vars.outputs.identifier }}
-    #     DISTDIR: ${{ steps.vars.outputs.distdir }}
-
     - name: Copy new index file to S3 📤
       run: aws s3 cp site/$DISTDIR/index.html s3://aria-site/aria/$IDENTIFIER-aria.html --no-progress
       env:
-        IDENTIFIER: ${{ steps.vars.outputs.identifier }}
-        DISTDIR: ${{ steps.vars.outputs.distdir }}
+        IDENTIFIER: ${{ needs.build.outputs.outputs.identifier }}
+        DISTDIR: ${{ needs.build.outputs.outputs.distdir }}
 
     - name: Copy new dist dir to S3 📤
       run: aws s3 cp site/$DISTDIR s3://aria-site/aria/$DISTDIR --recursive --no-progress
       env:
-        IDENTIFIER: ${{ steps.vars.outputs.identifier }}
-        DISTDIR: ${{ steps.vars.outputs.distdir }}
+        IDENTIFIER: ${{ needs.build.outputs.identifier }}
+        DISTDIR: ${{ needs.build.outputs.distdir }}
 
     - name: Deployment complete! 🚀
       run: |
-        echo "Your build is at: https://d13285jxgcxetl.cloudfront.net/aria/${{ steps.vars.outputs.distdir }}/index.html" >> $GITHUB_STEP_SUMMARY
+        echo "Your build is at: https://d13285jxgcxetl.cloudfront.net/aria/${{ needs.build.outputs.distdir }}/index.html" >> $GITHUB_STEP_SUMMARY
