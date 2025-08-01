@@ -37,7 +37,7 @@ jobs:
       run: cd site; npm install
     - name: Build 🏃
       run: cd site; npm run build
-      env: 
+      env:
         BASE_ARIA_URL: ${{ steps.vars.outputs.ariabaseurl }}
     - name: Upload artifacts 📤
       uses: actions/upload-artifact@v4
@@ -94,4 +94,4 @@ jobs:
 
     - name: Deployment complete! 🚀
       run: |
-        echo "Your build is at: https://d13285jxgcxetl.cloudfront.net/aria/${{ steps.vars.outputs.distdir }}/index.html"
+        echo "Your build is at: https://d13285jxgcxetl.cloudfront.net/aria/${{ steps.vars.outputs.distdir }}/index.html" >> $GITHUB_STEP_SUMMARY
