@@ -3,8 +3,6 @@
 name: Preview Deployment
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -57,7 +55,7 @@ jobs:
     needs: build
     environment:
       name: preview
-      url:  https://d13285jxgcxetl.cloudfront.net/aria/${{ needs.build.outputs.distdir }}/index.html
+      url:  https://d13285jxgcxetl.cloudfront.net/aria/${{ needs.build.outputs.identifier }}-aria.html
 
     steps:
     - name: Checkout 📥
@@ -90,4 +88,4 @@ jobs:
 
     - name: Deployment complete! 🚀
       run: |
-        echo "Your build is at: https://d13285jxgcxetl.cloudfront.net/aria/${{ needs.build.outputs.distdir }}/index.html" >> $GITHUB_STEP_SUMMARY
+        echo "Your build is at: https://d13285jxgcxetl.cloudfront.net/aria/${{ needs.build.outputs.identifier }}-aria.html" >> $GITHUB_STEP_SUMMARY
