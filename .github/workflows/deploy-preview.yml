@@ -28,7 +28,7 @@ jobs:
 
     - name: Setup vars 📋
       id: vars
-      run: echo "{ariabaseurl}={/aria/$(git rev-parse --short ${{ github.sha }})-20.x-dist}" >> $GITHUB_OUTPUT
+      run: echo "ariabaseurl=/aria/$(git rev-parse --short ${{ github.sha }})-20.x-dist" >> $GITHUB_OUTPUT
 
     - name: Install 🎯
       run: cd site; npm install
