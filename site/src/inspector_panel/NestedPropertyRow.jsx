@@ -1,7 +1,10 @@
-import PropTypes from "prop-types";
-import "./TableRow.css";
+import "./NestedPropertyRow.css";
 
-function TableRow({ mode, table_key, entity, indented = false }) {
+function NestedPropertyRow({ entity, mode, propertyName, expectedProperties = [] }) {
+  if (!entity[propertyName]) {
+    return null;
+  }
+
   // Function to check if a value is a URL
   const isURL = (value) => {
     if (!value || typeof value !== 'string') return false;
@@ -68,7 +71,7 @@ function TableRow({ mode, table_key, entity, indented = false }) {
 
     // Handle objects
     if (typeof value === 'object') {
-      const entries = Object.entries(value).filter(([key, val]) => val != null && val !== "null");
+      const entries = Object.entries(value).filter(([key, val]) => val != null);
       if (entries.length === 0) return '{}';
 
       return entries.map(([key, val]) => (
@@ -142,26 +145,83 @@ function TableRow({ mode, table_key, entity, indented = false }) {
     );
   };
 
+  const renderPropertyContent = () => {
+    try {
+      const data = typeof entity[propertyName] === 'string'
+        ? JSON.parse(entity[propertyName])
+        : entity[propertyName];
+
+      if (typeof data === 'object' && !Array.isArray(data)) {
+        // Handle object with expected properties first
+        const renderedProperties = [];
+        const processedKeys = new Set();
+
+        // Render expected properties in order
+        expectedProperties.forEach(prop => {
+          if (data[prop] != null) {
+            let valueToRender;
+
+            // Special handling for 'alternate' property - render arrays without brackets
+            if (prop === 'alternate' && Array.isArray(data[prop])) {
+              const allSimple = data[prop].every(item =>
+                typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean'
+              );
+
+              if (allSimple) {
+                valueToRender = data[prop].join(', ');
+              } else {
+                valueToRender = renderValue(data[prop]);
+              }
+            } else {
+              valueToRender = renderValue(data[prop]);
+            }
+
+            renderedProperties.push(
+              <p key={prop}>
+                <strong>{prop}: </strong>
+                {valueToRender}
+              </p>
+            );
+            processedKeys.add(prop);
+          }
+        });
+
+        // Render any remaining properties (excluding null values)
+        Object.entries(data)
+          .filter(([key]) => !processedKeys.has(key))
+          .filter(([key, value]) => value != null)
+          .forEach(([key, value]) => {
+            renderedProperties.push(
+              <p key={key}>
+                <strong>{key}: </strong>
+                {renderValue(value)}
+              </p>
+            );
+          });
+
+        return renderedProperties;
+      } else if (Array.isArray(data)) {
+        return data.map((item, index) => (
+          <p key={index}>{renderValue(item)}</p>
+        ));
+      } else {
+        return <p>{renderValue(data)}</p>;
+      }
+    } catch (e) {
+      return <p>{entity[propertyName]}</p>;
+    }
+  };
+
   return (
-    <tr key={table_key}>
-      <td style={{ paddingLeft: indented ? '20px' : '0px' }}>
-        <strong>{table_key}: </strong>
-      </td>
-      {entity[table_key] != null ? (
-        <td>
-          {renderValue(entity[table_key])}
-        </td>
-      ) : (
-        <td>None Found</td>
-      )}
-    </tr>
+    <div className={`panel-row ${propertyName}`}>
+      <div>
+        <strong>{propertyName}: </strong>
+        <div className="property-content">
+          {renderPropertyContent()}
+        </div>
+      </div>
+    </div>
   );
 }
 
-TableRow.propTypes = {
-  mode: PropTypes.string,
-  table_key: PropTypes.string.isRequired,
-  entity: PropTypes.object.isRequired,
-  indented: PropTypes.bool,
-};
-export default TableRow;
+export default NestedPropertyRow;

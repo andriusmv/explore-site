@@ -6,6 +6,7 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
 import ThemeIcon from "./ThemeIcon";
 import SourcesRow from "./SourcesRow.jsx";
+import NestedPropertyRow from "./NestedPropertyRow.jsx";
 
 const sharedProperties = [
   "theme",
@@ -13,28 +14,24 @@ const sharedProperties = [
   "update_time",
   "id",
   "sources",
+  "names",
+  "categories",
   "subtype",
+  "class",
   "version",
 ];
 
 function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
   return (
     <div className="theme-panel">
-      {entity["names"] ? (
-        <div className="top-name">
-          <div>
-            <em>{JSON.parse(entity["names"])["primary"]}</em>
-          </div>
-        </div>
-      ) : (
-        <></>
-      )}
       {entity["id"] ? (
         <div className="panel-row id">
-          <strong>id: </strong>
-          <span onDoubleClick={() => {
-              navigator.clipboard.writeText(entity["id"]);
-            }}>{entity["id"]}</span>
+          <div>
+            <strong>id: </strong>
+            <span onDoubleClick={() => {
+                navigator.clipboard.writeText(entity["id"]);
+              }}>{entity["id"]}</span>
+          </div>
           <InfoToolTip mode={mode} content=
             "A feature ID, typically associated with the Global Entity Reference System (GERS). Double Click to copy to clipboard"
           target={"theme-id-tip"} />
@@ -99,6 +96,42 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
       ) : (
         <></>
       )}
+      {entity["class"] ? (
+        <div className="panel-row class">
+          <div>
+            <strong>class: </strong>
+            {entity["class"]}
+            {entity["subclass"] ? (
+              <div style={{ paddingLeft: "15px" }}>
+                <IndentIcon /> <strong>subclass: </strong>
+                {entity["subclass"]}
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <InfoToolTip
+            mode={mode}
+            content={tips.class || "Classification of the feature"}
+            target={"theme-class-tip"}
+          />
+        </div>
+      ) : (
+        <></>
+      )}
+      <NestedPropertyRow
+        entity={entity}
+        mode={mode}
+        propertyName="names"
+        expectedProperties={["primary", "common", "rules"]}
+      />
+      <NestedPropertyRow
+        entity={entity}
+        mode={mode}
+        propertyName="categories"
+        expectedProperties={["primary", "alternate"]}
+      />
+
       {entity["sources"] ? (
         <SourcesRow entity={entity} mode={mode} tips={tips} />
       ) : (
@@ -117,6 +150,7 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
           {Object.keys(entity)
             .filter((key) => !key.startsWith("@"))
             .filter((key) => !sharedProperties.includes(key))
+            .filter((key) => entity[key] != null && entity[key] !== "null")
             .map((key) => (
               <TableRow key={key} mode={mode} table_key={key} entity={entity} />
             ))}

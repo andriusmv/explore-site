@@ -32,6 +32,19 @@ function InspectorPanel({
 
   const theme = entity["theme"];
 
+  // Determine the panel title - use name if available, otherwise default
+  let panelTitle = "Inspector Panel";
+  if (entity["names"]) {
+    try {
+      const names = JSON.parse(entity["names"]);
+      if (names["primary"]) {
+        panelTitle = names["primary"];
+      }
+    } catch (e) {
+      // If parsing fails, keep default title
+    }
+  }
+
   let inspectorPanel = <div></div>;
 
   if (theme === "base") {
@@ -101,14 +114,47 @@ function InspectorPanel({
   } else {
     console.log("unhandled theme type");
     console.log(entity);
+
+    // Get all keys except those starting with @
+    const allKeys = Object.keys(entity).filter((key) => !key.startsWith("@"));
+
+    // Create custom ordering for class/subclass hierarchy
+    const orderedKeys = [];
+    const processedKeys = new Set();
+
+    // First pass: add all keys except subclass
+    allKeys.forEach(key => {
+      if (key !== "subclass") {
+        orderedKeys.push({ key, indented: false });
+        processedKeys.add(key);
+
+        // If this is "class" and "subclass" exists, add subclass right after
+        if (key === "class" && entity.hasOwnProperty("subclass")) {
+          orderedKeys.push({ key: "subclass", indented: true });
+          processedKeys.add("subclass");
+        }
+      }
+    });
+
+    // Second pass: add any remaining keys that weren't processed
+    allKeys.forEach(key => {
+      if (!processedKeys.has(key)) {
+        orderedKeys.push({ key, indented: false });
+      }
+    });
+
     inspectorPanel = (
       <table>
         <tbody>
-          {Object.keys(entity)
-            .filter((key) => !key.startsWith("@"))
-            .map((key) => (
-              <TableRow key={key} mode={mode} table_key={key} entity={entity} />
-            ))}
+          {orderedKeys.map(({ key, indented }) => (
+            <TableRow
+              key={key}
+              mode={mode}
+              table_key={key}
+              entity={entity}
+              indented={indented}
+            />
+          ))}
         </tbody>
       </table>
     );
@@ -117,7 +163,7 @@ function InspectorPanel({
   return (
     <div className="inspector-panel">
       <div className="panel-header">
-        <h4 className="title">Inspector Panel</h4>
+        <h6 className="title">{panelTitle}</h6>
         <button
           className="close-panel-button"
           onClick={() => {

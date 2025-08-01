@@ -69,6 +69,12 @@ function SourcesRow({ entity, mode, tips }) {
                     {source.property}
                   </div>
                 )}
+                {source.between && (
+                  <div>
+                    <strong>between: </strong>
+                    {source.between}
+                  </div>
+                )}
                 {index < sources.length - 1 && (
                   <hr className="source-divider" />
                 )}

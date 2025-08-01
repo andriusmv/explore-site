@@ -20,8 +20,11 @@ import { layers } from "./Layers";
 import ThemeTypeLayer from "./ThemeTypeLayer";
 import FeaturePopup from "./FeatureSelector";
 
+// Fetch the latest Overture release from Overture STAC
+const LATEST_RELEASE = await fetch('https://stac.overturemaps.org/catalog.json').then(r => r.json()).then(r => r.latest.split('.')[0])
+
 const PMTILES_URL =
-  "pmtiles://https://d3c1b7bog2u1nn.cloudfront.net/2025-07-23/";
+  "pmtiles://https://d3c1b7bog2u1nn.cloudfront.net/" + LATEST_RELEASE + "/";
 
 const INITIAL_VIEW_STATE = {
   latitude: 38.90678,

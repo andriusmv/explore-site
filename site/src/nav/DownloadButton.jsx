@@ -12,6 +12,8 @@ import RefreshIcon from "../icons/icon-refresh.svg?react";
 import "./DownloadButton.css";
 import Floater from "react-floater";
 import CloseIcon from "@mui/icons-material/Close";
+import initWasm from "@geoarrow/geoarrow-wasm/esm/index.js";
+import wasmUrl from "@geoarrow/geoarrow-wasm/esm/index_bg.wasm?url"
 
 const ZOOM_BOUND = 15;
 
@@ -29,6 +31,11 @@ function DownloadButton({ mode, zoom, setZoom, visibleTypes}) {
   }, [myMap]);
 
   const handleDownloadClick = async () => {
+
+    //TODO: Make this async and parallelize with the startup of the map component, rather than blocking in.
+    await initWasm(wasmUrl);
+
+
     setLoading(true);
     try {
       //Get current map dimensions and convert to bbox
