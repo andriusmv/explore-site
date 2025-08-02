@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import LayerIcon from "./icons/icon-layers.svg?react";
 import "./ThemeSelector.css";
@@ -70,7 +71,6 @@ const ThemeSelector = ({
   setVisibleTypes,
   activeThemes,
   setActiveThemes,
-  entity,
   themeRef,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -102,8 +102,13 @@ const ThemeSelector = ({
 
     setSelectedThemes(newSelectedThemes);
     setSelectedTypesState(newSelectedTypes);
-    updateVisibleTypes(newSelectedTypes);
-  }, []);
+
+    // Update visible types inline to avoid dependency issues
+    const visible = Object.keys(newSelectedTypes).filter(
+      (type) => newSelectedTypes[type]
+    );
+    setVisibleTypes(visible);
+  }, [setVisibleTypes]);
 
   useEffect(() => {
     const newSelectedTypes = {};
@@ -358,6 +363,15 @@ const ThemeSelector = ({
       </Popper>
     </div>
   );
+};
+
+ThemeSelector.propTypes = {
+  mode: PropTypes.string.isRequired,
+  visibleTypes: PropTypes.array.isRequired,
+  setVisibleTypes: PropTypes.func.isRequired,
+  activeThemes: PropTypes.array.isRequired,
+  setActiveThemes: PropTypes.func.isRequired,
+  themeRef: PropTypes.object.isRequired,
 };
 
 export default ThemeSelector;

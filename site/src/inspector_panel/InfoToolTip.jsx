@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import Floater from "react-floater";
 import InfoIcon from "../icons/icon-info.svg?react";
 import { useState } from "react";
@@ -44,5 +45,11 @@ function InfoToolTip({ mode, target, content }) {
     </div>
   );
 }
+
+InfoToolTip.propTypes = {
+  mode: PropTypes.string.isRequired,
+  target: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired,
+};
 
 export default InfoToolTip;

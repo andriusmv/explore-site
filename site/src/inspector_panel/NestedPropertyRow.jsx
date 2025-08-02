@@ -1,6 +1,7 @@
+import PropTypes from "prop-types";
 import "./NestedPropertyRow.css";
 
-function NestedPropertyRow({ entity, mode, propertyName, expectedProperties = [] }) {
+function NestedPropertyRow({ entity, propertyName, expectedProperties = [] }) {
   if (!entity[propertyName]) {
     return null;
   }
@@ -71,13 +72,13 @@ function NestedPropertyRow({ entity, mode, propertyName, expectedProperties = []
 
     // Handle objects
     if (typeof value === 'object') {
-      const entries = Object.entries(value).filter(([key, val]) => val != null);
+      const entries = Object.entries(value).filter(([, val]) => val != null);
       if (entries.length === 0) return '{}';
 
-      return entries.map(([key, val]) => (
-        <div key={key} className="nested-item">
+      return entries.map(([objKey, val]) => (
+        <div key={objKey} className="nested-item">
           <span className="nested-key">
-            {key}:
+            {objKey}:
           </span>{' '}
           {renderValueContent(val)}
         </div>
@@ -188,12 +189,12 @@ function NestedPropertyRow({ entity, mode, propertyName, expectedProperties = []
 
         // Render any remaining properties (excluding null values)
         Object.entries(data)
-          .filter(([key]) => !processedKeys.has(key))
-          .filter(([key, value]) => value != null)
-          .forEach(([key, value]) => {
+          .filter(([objKey]) => !processedKeys.has(objKey))
+          .filter(([, value]) => value != null)
+          .forEach(([objKey, value]) => {
             renderedProperties.push(
-              <p key={key}>
-                <strong>{key}: </strong>
+              <p key={objKey}>
+                <strong>{objKey}: </strong>
                 {renderValue(value)}
               </p>
             );
@@ -223,5 +224,11 @@ function NestedPropertyRow({ entity, mode, propertyName, expectedProperties = []
     </div>
   );
 }
+
+NestedPropertyRow.propTypes = {
+  entity: PropTypes.object.isRequired,
+  propertyName: PropTypes.string.isRequired,
+  expectedProperties: PropTypes.array,
+};
 
 export default NestedPropertyRow;
