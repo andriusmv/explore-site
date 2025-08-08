@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import "./InspectorPanel.css";
-import { getThemeConfig, isKnownTheme } from "./config/ThemeRegistry";
+import { getThemeConfig } from "./config/ThemeRegistry";
 import { processActiveFeature } from "./utils/EntityProcessor";
 import { extractPanelTitle } from "./utils/PanelTitleExtractor";
 import PanelHeader from "./components/PanelHeader";
@@ -76,6 +76,11 @@ function InspectorPanel({
 }
 
 InspectorPanel.propTypes = {
-  entity: PropTypes.object,
+  mode: PropTypes.string.isRequired,
+  setFeatures: PropTypes.func.isRequired,
+  activeThemes: PropTypes.array.isRequired,
+  setActiveThemes: PropTypes.func.isRequired,
+  activeFeature: PropTypes.object,
+  setActiveFeature: PropTypes.func.isRequired,
 };
 export default InspectorPanel;

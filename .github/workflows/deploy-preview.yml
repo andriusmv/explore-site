@@ -38,6 +38,9 @@ jobs:
     - name: Install 🎯
       run: cd site; npm install
 
+    - name: Lint 🧹
+      run: cd site; npm run lint
+
     - name: Build 🏃
       run: cd site; npm run build
       env:

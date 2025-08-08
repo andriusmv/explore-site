@@ -1,10 +1,10 @@
+import PropTypes from "prop-types";
 import TableRow from "./TableRow";
 import "./ThemePanel.css";
 import IndentIcon from "../icons/icon-indent.svg?react";
 import InfoToolTip from "./InfoToolTip";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import PushPinOutlinedIcon from "@mui/icons-material/PushPinOutlined";
-import ThemeIcon from "./ThemeIcon";
 import SourcesRow from "./SourcesRow.jsx";
 import NestedPropertyRow from "./NestedPropertyRow.jsx";
 
@@ -18,6 +18,7 @@ const sharedProperties = [
   "categories",
   "subtype",
   "class",
+  "subclass",
   "version",
 ];
 
@@ -121,13 +122,11 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
       )}
       <NestedPropertyRow
         entity={entity}
-        mode={mode}
         propertyName="names"
         expectedProperties={["primary", "common", "rules"]}
       />
       <NestedPropertyRow
         entity={entity}
-        mode={mode}
         propertyName="categories"
         expectedProperties={["primary", "alternate"]}
       />
@@ -152,12 +151,20 @@ function ThemePanel({ mode, entity, tips, activeThemes, setActiveThemes }) {
             .filter((key) => !sharedProperties.includes(key))
             .filter((key) => entity[key] != null && entity[key] !== "null")
             .map((key) => (
-              <TableRow key={key} mode={mode} table_key={key} entity={entity} />
+              <TableRow key={key} table_key={key} entity={entity} />
             ))}
         </tbody>
       </table>
     </div>
   );
 }
+
+ThemePanel.propTypes = {
+  mode: PropTypes.string.isRequired,
+  entity: PropTypes.object.isRequired,
+  tips: PropTypes.object.isRequired,
+  activeThemes: PropTypes.array.isRequired,
+  setActiveThemes: PropTypes.func.isRequired,
+};
 
 export default ThemePanel;

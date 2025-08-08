@@ -30,6 +30,9 @@ export default function Header({ zoom, mode, setMode, setZoom, visibleTypes}) {
 }
 
 Header.propTypes = {
+  zoom: PropTypes.number.isRequired,
   mode: PropTypes.string.isRequired,
   setMode: PropTypes.func.isRequired,
+  setZoom: PropTypes.func.isRequired,
+  visibleTypes: PropTypes.array.isRequired,
 };

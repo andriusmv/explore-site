@@ -3,6 +3,7 @@ import {
   NavigationControl,
   Source,
   AttributionControl,
+  ScaleControl,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import * as pmtiles from "pmtiles";
@@ -176,7 +177,7 @@ export default function Map({
         setActiveFeature(null);
       }
     },
-    [visibleTypes]
+    [visibleTypes, setFeatures, setActiveFeature]
   );
 
   const handleZoom = (event) => {
@@ -222,32 +223,43 @@ export default function Map({
           />
 
           {[false, true].map((label) => {
-            return layers.map((props, i) => (
-              <ThemeTypeLayer
-                key={`${props.theme}_${props.type}_${i}`}
-                {...{
-                  ...props,
-                  color: activeThemes.includes(props.theme)
-                    ? props.activeColor || props.color
-                    : props.color,
-                }}
-                visible={
-                  visibleTypes.includes(props.type) &&
-                  (props.activeOnly === undefined ||
-                    activeThemes.includes(props.theme))
-                }
-                label={label && activeThemes.includes(props.theme)}
-                active={activeThemes.includes(props.theme)}
-                activeThemes={activeThemes}
-                highlightColor={
-                  activeThemes.includes(props.theme)
-                    ? props.activeColor
-                      ? props.color
-                      : undefined
-                    : props.activeColor
-                }
-              />
-            ));
+            return layers.map((layerProps, i) => {
+              const {
+                theme,
+                type,
+                color,
+                activeColor,
+                activeOnly,
+                ...otherProps
+              } = layerProps;
+
+              return (
+                <ThemeTypeLayer
+                  key={`${theme}_${type}_${i}`}
+                  {...otherProps}
+                  theme={theme}
+                  type={type}
+                  color={activeThemes.includes(theme)
+                    ? activeColor || color
+                    : color}
+                  visible={
+                    visibleTypes.includes(type) &&
+                    (activeOnly === undefined ||
+                      activeThemes.includes(theme))
+                  }
+                  label={label && activeThemes.includes(theme)}
+                  active={activeThemes.includes(theme)}
+                  activeThemes={activeThemes}
+                  highlightColor={
+                    activeThemes.includes(theme)
+                      ? activeColor
+                        ? color
+                        : undefined
+                      : activeColor
+                  }
+                />
+              );
+            });
           })}
           <Layer
             id="divisions_division"
@@ -340,6 +352,7 @@ export default function Map({
 
           <NavigationControl position="top-right"></NavigationControl>
           <GeolocateControl />
+          <ScaleControl position="bottom-left" />
           <AttributionControl customAttribution='<a href="https://openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>, <a href="https://overturemaps.org" target="_blank">Overture Maps Foundation</a>' />
         </MapLibreMap>
 
@@ -364,7 +377,6 @@ export default function Map({
             />
           )}
           <ThemeSelector
-            entity={features}
             mode={mode}
             visibleTypes={visibleTypes}
             setVisibleTypes={setVisibleTypes}
@@ -390,4 +402,14 @@ export default function Map({
 
 Map.propTypes = {
   mode: PropTypes.string.isRequired,
+  features: PropTypes.array.isRequired,
+  setFeatures: PropTypes.func.isRequired,
+  activeFeature: PropTypes.object,
+  setActiveFeature: PropTypes.func.isRequired,
+  setZoom: PropTypes.func.isRequired,
+  navigatorOpen: PropTypes.bool.isRequired,
+  setNavigatorOpen: PropTypes.func.isRequired,
+  themeRef: PropTypes.object.isRequired,
+  visibleTypes: PropTypes.array.isRequired,
+  setVisibleTypes: PropTypes.func.isRequired,
 };

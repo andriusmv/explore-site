@@ -18,7 +18,7 @@ export const createOrderedKeys = (entity) => {
       processedKeys.add(key);
 
       // If this is "class" and "subclass" exists, add subclass right after
-      if (key === "class" && entity.hasOwnProperty("subclass")) {
+      if (key === "class" && Object.prototype.hasOwnProperty.call(entity, "subclass")) {
         orderedKeys.push({ key: "subclass", indented: true });
         processedKeys.add("subclass");
       }

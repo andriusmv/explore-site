@@ -1,25 +1,12 @@
+import PropTypes from "prop-types";
 import "./Navigator.css";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import { useMap } from "react-map-gl/maplibre";
 import { tours } from "./NavigatorConfig";
-import { useState, useEffect } from "react";
 
-export function useNavigatorState(initialOpen = false) {
-  const [navigatorOpen, setNavigatorOpen] = useState(() => {
-    const stored = localStorage.getItem("navigatorOpen");
-    return stored !== null ? JSON.parse(stored) : !initialOpen;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("navigatorOpen", JSON.stringify(navigatorOpen));
-  }, [navigatorOpen]);
-
-  return [navigatorOpen, setNavigatorOpen];
-}
-
-function Navigator({ open, setOpen, map, setVisibleTypes, setActiveThemes }) {
+function Navigator({ open, setOpen, setVisibleTypes, setActiveThemes }) {
   const { myMap } = useMap();
 
   const handleTourSelect = (tourId) => {
@@ -44,7 +31,7 @@ function Navigator({ open, setOpen, map, setVisibleTypes, setActiveThemes }) {
               </button>
             </div>
             <div className="navigator-blurb">
-              We've picked a few spots around the world you might be interested
+              We&apos;ve picked a few spots around the world you might be interested
               in seeing.
             </div>
             <div className="navigator-container">
@@ -74,5 +61,12 @@ function Navigator({ open, setOpen, map, setVisibleTypes, setActiveThemes }) {
     </>
   );
 }
+
+Navigator.propTypes = {
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  setVisibleTypes: PropTypes.func.isRequired,
+  setActiveThemes: PropTypes.func.isRequired,
+};
 
 export default Navigator;

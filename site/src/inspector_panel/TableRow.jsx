@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import "./TableRow.css";
 
-function TableRow({ mode, table_key, entity, indented = false }) {
+function TableRow({ table_key, entity, indented = false }) {
   // Function to check if a value is a URL
   const isURL = (value) => {
     if (!value || typeof value !== 'string') return false;
@@ -68,13 +68,13 @@ function TableRow({ mode, table_key, entity, indented = false }) {
 
     // Handle objects
     if (typeof value === 'object') {
-      const entries = Object.entries(value).filter(([key, val]) => val != null && val !== "null");
+      const entries = Object.entries(value).filter(([, val]) => val != null && val !== "null");
       if (entries.length === 0) return '{}';
 
-      return entries.map(([key, val]) => (
-        <div key={key} className="nested-item">
+      return entries.map(([objKey, val]) => (
+        <div key={objKey} className="nested-item">
           <span className="nested-key">
-            {key}:
+            {objKey}:
           </span>{' '}
           {renderValueContent(val)}
         </div>
@@ -159,7 +159,6 @@ function TableRow({ mode, table_key, entity, indented = false }) {
 }
 
 TableRow.propTypes = {
-  mode: PropTypes.string,
   table_key: PropTypes.string.isRequired,
   entity: PropTypes.object.isRequired,
   indented: PropTypes.bool,

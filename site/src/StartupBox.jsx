@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Checkbox, FormControlLabel, Box, Modal } from "@mui/material";
 import "./StartupBox.css";
 
@@ -67,5 +68,14 @@ function StartupBox({
     </div>
   );
 }
+
+StartupBox.propTypes = {
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  startTour: PropTypes.func.isRequired,
+  updateTour: PropTypes.func.isRequired,
+  mode: PropTypes.string.isRequired,
+  setNavigatorOpen: PropTypes.func.isRequired,
+};
 
 export default StartupBox;

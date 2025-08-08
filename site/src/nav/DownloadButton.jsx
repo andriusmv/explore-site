@@ -28,7 +28,7 @@ function DownloadButton({ mode, zoom, setZoom, visibleTypes}) {
       myMap.getBounds();
       setZoom(myMap.getZoom());
     }
-  }, [myMap]);
+  }, [myMap, setZoom]);
 
   const handleDownloadClick = async () => {
 
@@ -218,5 +218,12 @@ function DownloadButton({ mode, zoom, setZoom, visibleTypes}) {
     </div>
   );
 }
+
+DownloadButton.propTypes = {
+  mode: PropTypes.string.isRequired,
+  zoom: PropTypes.number.isRequired,
+  setZoom: PropTypes.func.isRequired,
+  visibleTypes: PropTypes.array.isRequired,
+};
 
 export default DownloadButton;

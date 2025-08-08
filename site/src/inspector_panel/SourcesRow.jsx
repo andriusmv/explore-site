@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import InfoToolTip from "./InfoToolTip";
 import "./SourcesRow.css";
 
@@ -91,5 +92,11 @@ function SourcesRow({ entity, mode, tips }) {
     </div>
   );
 }
+
+SourcesRow.propTypes = {
+  entity: PropTypes.object.isRequired,
+  mode: PropTypes.string.isRequired,
+  tips: PropTypes.object.isRequired,
+};
 
 export default SourcesRow;

@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 import Joyride, { ACTIONS, EVENTS, LIFECYCLE } from "react-joyride";
 import { useState } from "react";
-import LayerIcon from "./icons/icon-layers.svg?react";
 import "./Tour.css";
 
 const Steps = [
@@ -93,62 +93,6 @@ const Steps = [
   },
 ];
 
-const sampleFeature = {
-  geometry: {
-    type: "Point",
-    coordinates: [3.7302714586257935, 51.05027395815554],
-  },
-  type: "Feature",
-  properties: {
-    theme: "places",
-    type: "place",
-    id: "08f194db132d2b6d0388899915aac1fc",
-    "@name": "Grill Mix Centrum",
-    "@category": "bar_and_grill_restaurant",
-    names: '{"primary":"Grill Mix Centrum","common":null,"rules":null}',
-    confidence: 0.9584614231086451,
-    categories:
-      '{"main":"bar_and_grill_restaurant","alternate":["pizza_restaurant","doner_kebab"]}',
-    websites: '["http://www.pizzacity.be"]',
-    socials: '["https://www.facebook.com/612060042296776"]',
-    phones: '["+3292257440"]',
-    addresses:
-      '[{"freeform":"Vlaanderenstraat 85","locality":"Gent","postcode":"9000","region":null,"country":"BE"}]',
-    version: 0,
-    update_time: "2024-04-11T00:00:00.000Z",
-    sources:
-      '[{"property":"","dataset":"meta","record_id":"612060042296776","confidence":null}]',
-  },
-  id: 38848842,
-  layer: {
-    id: "places",
-    type: "circle",
-    source: "overture-places",
-    "source-layer": "places",
-    filter: [">=", ["get", "confidence"], 0],
-    layout: {},
-    paint: {
-      "circle-color": {
-        r: 0.792156862745098,
-        g: 0.6980392156862745,
-        b: 0.8392156862745098,
-        a: 1,
-      },
-      "circle-radius": 1.8749883174673414,
-      "circle-stroke-width": 2,
-      "circle-stroke-color": {
-        r: 0,
-        g: 0,
-        b: 0,
-        a: 1,
-      },
-    },
-  },
-  source: "overture-places",
-  sourceLayer: "places",
-  state: {},
-};
-
 function Tour({ run, modeName, setFeatures, setNavigatorOpen, themeRef }) {
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -164,8 +108,8 @@ function Tour({ run, modeName, setFeatures, setNavigatorOpen, themeRef }) {
   Each "step" has typically 3 events associated with it. Therefore, we must check that events only
   take place once, which is why we check the event lifecycle. In addition, we must check the action of
   the event (next, prev, skip, etc). This is a tedious and granular process, but it allows the tour
-  to be very controlled and open/close different parts and pieces of the explorer site to show them 
-  all off. 
+  to be very controlled and open/close different parts and pieces of the explorer site to show them
+  all off.
   */
   const handleJoyrideCallback = (event) => {
     if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(event.type)) {
@@ -290,5 +234,13 @@ function Tour({ run, modeName, setFeatures, setNavigatorOpen, themeRef }) {
     />
   );
 }
+
+Tour.propTypes = {
+  run: PropTypes.bool.isRequired,
+  modeName: PropTypes.string.isRequired,
+  setFeatures: PropTypes.func.isRequired,
+  setNavigatorOpen: PropTypes.func.isRequired,
+  themeRef: PropTypes.object.isRequired,
+};
 
 export default Tour;

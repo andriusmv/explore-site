@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import Tour from "./Tour";
 import StartupBox from "./StartupBox";
 import { ThemeProvider } from "@mui/material";
-import { useNavigatorState } from "./navigator/Navigator";
+import { useNavigatorState } from "./navigator/useNavigatorState";
 
 function App() {
   const [modeName, setModeName] = useState(getTheme());
@@ -30,7 +30,7 @@ function App() {
     localStorage.setItem("tour", event.target.checked);
     setTour(!tour);
   };
-  
+
   const [visibleTypes, setVisibleTypes] = useState([]);
 
 

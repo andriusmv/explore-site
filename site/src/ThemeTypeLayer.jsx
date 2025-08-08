@@ -257,6 +257,7 @@ ThemeTypeLayer.propTypes = {
   line: PropTypes.bool,
   polygon: PropTypes.bool,
   extrusion: PropTypes.bool,
+  visible: PropTypes.bool,
   outline: PropTypes.bool,
   active: PropTypes.bool,
   label: PropTypes.bool,
