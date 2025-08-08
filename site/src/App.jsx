@@ -30,7 +30,7 @@ function App() {
     localStorage.setItem("tour", event.target.checked);
     setTour(!tour);
   };
-  
+
   const [visibleTypes, setVisibleTypes] = useState([]);
 
 

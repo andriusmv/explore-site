@@ -18,6 +18,7 @@ const sharedProperties = [
   "categories",
   "subtype",
   "class",
+  "subclass",
   "version",
 ];
 

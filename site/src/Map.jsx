@@ -3,6 +3,7 @@ import {
   NavigationControl,
   Source,
   AttributionControl,
+  ScaleControl,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import * as pmtiles from "pmtiles";
@@ -351,6 +352,7 @@ export default function Map({
 
           <NavigationControl position="top-right"></NavigationControl>
           <GeolocateControl />
+          <ScaleControl position="bottom-left" />
           <AttributionControl customAttribution='<a href="https://openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>, <a href="https://overturemaps.org" target="_blank">Overture Maps Foundation</a>' />
         </MapLibreMap>
 
